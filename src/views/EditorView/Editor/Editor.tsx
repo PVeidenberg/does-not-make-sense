@@ -104,6 +104,7 @@ class Editor extends React.Component<IProps, IState> {
     window.addEventListener(EventType.MOUSE_MOVE, this.update);
     window.addEventListener(EventType.MOUSE_UP, this.update);
     window.addEventListener(EventType.KEY_DOWN, this.handleKeyDown);
+    window.addEventListener(EventType.KEY_UP, this.handleKeyUp);
     EditorModel.canvas.addEventListener(EventType.MOUSE_DOWN, this.update);
     EditorModel.canvas.addEventListener(EventType.MOUSE_WHEEL, this.handleZoom);
   }
@@ -112,6 +113,7 @@ class Editor extends React.Component<IProps, IState> {
     window.removeEventListener(EventType.MOUSE_MOVE, this.update);
     window.removeEventListener(EventType.MOUSE_UP, this.update);
     window.removeEventListener(EventType.KEY_DOWN, this.handleKeyDown);
+    window.removeEventListener(EventType.KEY_UP, this.handleKeyUp);
     EditorModel.canvas.removeEventListener(EventType.MOUSE_DOWN, this.update);
     EditorModel.canvas.removeEventListener(
       EventType.MOUSE_WHEEL,
@@ -214,6 +216,23 @@ class Editor extends React.Component<IProps, IState> {
       const nextLabelId = labels[nextIndex].id;
 
       this.props.updateActiveLabelId(nextLabelId);
+    }
+  };
+
+  private handleKeyUp = (event: KeyboardEvent) => {
+    const { imageData, activeLabelId } = this.props;
+
+    if (event.altKey && event.key === "ArrowUp") {
+      const labels = imageData.labelRects; // Or labelPoints, depending on context
+
+      // Find the next label ID
+      const currentIndex = labels.findIndex(
+        (label) => label.id === activeLabelId
+      );
+      const lastIndex = (currentIndex - 1) % labels.length;
+      const lastLabelId = labels[lastIndex].id;
+
+      this.props.updateActiveLabelId(lastLabelId);
     }
   };
 
